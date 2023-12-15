@@ -1,0 +1,74 @@
+{
+  "name": "walking_tracker",
+  "version": "0.0.2",
+  "repository": "https://github.com/AndrewDongminYoo/walking_tracker",
+  "author": "Dongmin,Yoo <ydm2790@gmail.com> (https://github.com/AndrewDongminYoo)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AndrewDongminYoo/walking_tracker/issues"
+  },
+  "scripts": {
+    "android": "react-native run-android",
+    "clear": "react-native clean --include watchman,yarn,metro,android",
+    "doctor": "react-native doctor --fix",
+    "preios": "react-native setup-ios-permissions",
+    "ios": "react-native run-ios",
+    "lint": "eslint . --ext .ts --ext .tsx --fix",
+    "format": "prettier \"**/*.{ts,js,jsx,tsx}\" --check --write",
+    "start": "react-native start --reset-cache",
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "unwatch": "watchman watch-del \"$PWD\"; watchman watch-project \"$PWD\"",
+    "watch": "tsc --noEmit --watch"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "@dongminyu/react-native-step-counter": "^0.2.3",
+    "react": "18.2.0",
+    "react-native": "^0.72.7",
+    "react-native-circular-progress-indicator": "^4.4.2",
+    "react-native-gesture-handler": "^2.13.4",
+    "react-native-permissions": "^3.10.1",
+    "react-native-reanimated": "^3.5.4",
+    "react-native-svg": "^14.0.0",
+    "react-native-webview": "^13.6.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@babel/runtime": "^7.23.2",
+    "@react-native/eslint-config": "^0.74.0",
+    "@react-native/eslint-plugin": "^0.74.0",
+    "@react-native/metro-config": "^0.74.0",
+    "@tsconfig/react-native": "^3.0.2",
+    "@types/react": "^18.2.33",
+    "@types/react-test-renderer": "^18.0.5",
+    "babel-jest": "^29.2.1",
+    "eslint": "^8.52.0",
+    "jest": "^29.2.1",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "pod-install": "^0.1.39",
+    "prettier": "^3.0.3",
+    "react-test-renderer": "18.2.0",
+    "typescript": "5.2.2"
+  },
+  "resolutions": {
+    "@babel/plugin-proposal-async-generator-functions": "npm:@babel/plugin-transform-async-generator-functions",
+    "@babel/plugin-proposal-class-properties": "npm:@babel/plugin-transform-class-properties",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "npm:@babel/plugin-transform-nullish-coalescing-operator",
+    "@babel/plugin-proposal-numeric-separator": "npm:@babel/plugin-transform-numeric-separator",
+    "@babel/plugin-proposal-object-rest-spread": "npm:@babel/plugin-transform-object-rest-spread",
+    "@babel/plugin-proposal-optional-catch-binding": "npm:@babel/plugin-transform-optional-catch-binding",
+    "@babel/plugin-proposal-optional-chaining": "npm:@babel/plugin-transform-optional-chaining",
+    "@babel/plugin-transform-arrow-functions": "^7.0.0-0",
+    "@babel/plugin-transform-shorthand-properties": "^7.0.0-0",
+    "@babel/plugin-transform-template-literals": "^7.0.0-0",
+    "uglify-es": "npm:uglify-js"
+  },
+  "reactNativePermissionsIOS": [
+    "Motion"
+  ]
+}
