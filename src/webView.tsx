@@ -1,9 +1,16 @@
 import React, { useRef, useState } from 'react';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { View, StyleSheet, Button, Text } from 'react-native';
-import App, { test } from './App';
+import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from './screens/RootStack';
+
+type WebViewScreenRouteProp = RouteProp<RootStackParamList, 'WebView'>;
 
 const MyWebView: React.FC = () => {
+  const navigation = useNavigation();
+  const route = useRoute<WebViewScreenRouteProp>();
+  const { params } = route.params || { params: null };
+
   const webViewRef = useRef<WebView>(null);
   const [stepState, setStepState] = useState(false);
   const sendMessageToWeb = (message: string) => {
@@ -11,13 +18,16 @@ const MyWebView: React.FC = () => {
     // 웹뷰로 메시지 전송
     webViewRef.current?.postMessage(message);
   };
-
+  if (params) {
+    sendMessageToWeb('걸음수' + JSON.stringify(params));
+  }
   const onWebviewMessage = (event: WebViewMessageEvent) => {
     // WebView에서 메시지를 받았을 때의 처리
     console.log('WebView에서 메시지 수신:', event.nativeEvent.data);
     if (event.nativeEvent.data === 'startWalking') {
       // '걷기 시작' 메시지를 받으면 App 컴포넌트에 메시지를 전달하고 stepState를 변경
       setStepState(true);
+      navigation.navigate('STEP', { webE: true });
     } else if (event.nativeEvent.data === 'stopWalking') {
       // '걷기 종료' 메시지를 받으면 App 컴포넌트에 메시지를 전달하고 stepState를 변경
       setStepState(false);
@@ -27,19 +37,31 @@ const MyWebView: React.FC = () => {
   return (
     <>
       <View style={styles.container}>
-        <Text>{test}</Text>
         <Button title="메시지 전송" onPress={() => sendMessageToWeb('네이티브')} />
         {/* <WebView source={{ uri: 'http://reactwebapp.dothome.co.kr/webapp/' }} onMessage={onWebviewMessage} /> */}
         <WebView ref={webViewRef} source={{ uri: 'http://172.20.14.69:3000/webapp/' }} onMessage={onWebviewMessage} />
       </View>
-      <App webE={stepState} />
+      <View style={styles.result}>
+        <Text>걸음수 측정 결과 :</Text>
+        <Text>Daily Goal: {params?.dailyGoal}</Text>
+        <Text>Steps: {params?.steps}</Text>
+        <Text>Steps String: {params?.stepsString}</Text>
+        <Text>Calories: {params?.calories}</Text>
+        <Text>Start Date: {params?.startDate}</Text>
+        <Text>End Date: {params?.endDate}</Text>
+        <Text>Distance: {params?.distance}</Text>
+      </View>
+      {/* <StepFun webE={stepState} /> */}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.5,
+    flex: 0.8,
+  },
+  result: {
+    flex: 0.2,
   },
 });
 

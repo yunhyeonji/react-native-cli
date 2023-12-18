@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Button, ImageBackground, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   isSensorWorking,
   isStepCountingSupported,
@@ -10,6 +10,10 @@ import {
 } from '@dongminyu/react-native-step-counter';
 import { getBodySensorPermission, getStepCounterPermission } from './permission';
 import CircularProgress from 'react-native-circular-progress-indicator';
+import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from './screens/RootStack';
+
+type StepFunScreenRouteProp = RouteProp<RootStackParamList, 'STEP'>;
 
 type SensorType<T = typeof Platform.OS> = T extends 'ios'
   ? 'CMPedometer'
@@ -51,6 +55,10 @@ type AdditionalInfo = Partial<ParsedStepCountData>;
  * @example
  */
 export default function StepFun(): JSX.Element {
+  const navigation = useNavigation();
+  const route = useRoute<StepFunScreenRouteProp>();
+  const { webE } = route.params || { webE: false };
+
   const [loaded, setLoaded] = React.useState(false);
   const [supported, setSupported] = React.useState(false);
   const [granted, setGranted] = React.useState(false);
@@ -141,49 +149,57 @@ export default function StepFun(): JSX.Element {
   React.useEffect(() => {
     console.debug(`🚀 stepCounter ${supported ? '' : 'not'} supported`);
     console.debug(`🚀 user ${granted ? 'granted' : 'denied'} stepCounter`);
-    if (supported && granted) {
+    if (supported && granted && webE) {
       startStepCounter();
     } else {
       stopStepCounter();
     }
-  }, [granted, supported]);
+  }, [granted, supported, webE]);
 
   return (
-    <SafeAreaView style={{ flex: 0.5 }}>
-      <ImageBackground
-        // source={{ uri: 'https://image.utoimage.com/preview/cp860522/2018/10/201810018116_500.jpg' }}
-        source={{
-          uri: 'https://media.istockphoto.com/id/1133405969/ko/%EC%82%AC%EC%A7%84/%EB%B8%94%EB%9E%99-%EB%A7%A4%ED%8A%B8-%EB%B0%B0%EA%B2%BD.jpg?s=612x612&w=0&k=20&c=E8vn42avxoOtqiChGNAhRkSEieXNnmDbWONUTd7KgVU=',
-        }}
-        style={styles.backgroundImage}>
-        <View style={styles.container}>
-          <View style={styles.indicator}>
-            <CircularProgress
-              value={stepCount}
-              maxValue={10000}
-              valueSuffix="steps"
-              progressValueFontSize={42}
-              radius={165}
-              activeStrokeColor="white"
-              inActiveStrokeColor="white"
-              inActiveStrokeOpacity={0.2}
-              inActiveStrokeWidth={40}
-              subtitle={additionalInfo.calories === '0 kCal' ? '' : additionalInfo.calories}
-              activeStrokeWidth={40}
-              title="   "
-              titleColor="#000080"
-              titleFontSize={30}
-              titleStyle={{ fontWeight: 'bold' }}
-            />
+    <>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ImageBackground
+          source={{ uri: 'https://image.utoimage.com/preview/cp860522/2018/10/201810018116_500.jpg' }}
+          // source={{
+          //   uri: 'https://media.istockphoto.com/id/1133405969/ko/%EC%82%AC%EC%A7%84/%EB%B8%94%EB%9E%99-%EB%A7%A4%ED%8A%B8-%EB%B0%B0%EA%B2%BD.jpg?s=612x612&w=0&k=20&c=E8vn42avxoOtqiChGNAhRkSEieXNnmDbWONUTd7KgVU=',
+          // }}
+          style={styles.backgroundImage}>
+          <View style={styles.container}>
+            <View style={styles.indicator}>
+              <CircularProgress
+                value={stepCount}
+                maxValue={10000}
+                valueSuffix="steps"
+                progressValueFontSize={42}
+                radius={165}
+                activeStrokeColor="white"
+                inActiveStrokeColor="white"
+                inActiveStrokeOpacity={0.2}
+                inActiveStrokeWidth={40}
+                subtitle={additionalInfo.calories === '0 kCal' ? '' : additionalInfo.calories}
+                activeStrokeWidth={40}
+                title="   "
+                titleColor="#000080"
+                titleFontSize={30}
+                titleStyle={{ fontWeight: 'bold' }}
+              />
+            </View>
           </View>
-        </View>
-      </ImageBackground>
-    </SafeAreaView>
+        </ImageBackground>
+      </SafeAreaView>
+      <Button
+        title="걷기 종료"
+        onPress={() => {
+          stopStepCounter();
+          navigation.navigate('WebView', { params: additionalInfo });
+        }}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  /** Styling the container. */
   container: {
     flex: 1,
     height: '100%',
@@ -191,12 +207,10 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'light-blue',
   },
-  /** Styling the circular indicator. */
   indicator: {
     marginTop: 10,
     marginBottom: 20,
   },
-  /** Styling the button group. */
   bGroup: {
     width: '100%',
     flexDirection: 'row',
