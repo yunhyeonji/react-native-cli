@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ImageBackground, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Button, ImageBackground, Platform, SafeAreaView, Text, StyleSheet, View } from 'react-native';
 import {
   isSensorWorking,
   isStepCountingSupported,
@@ -65,6 +65,8 @@ export default function StepFun(): JSX.Element {
   const [sensorType, setSensorType] = React.useState<SensorName>('NONE');
   const [stepCount, setStepCount] = React.useState(0);
   const [additionalInfo, setAdditionalInfo] = React.useState<AdditionalInfo>(initState);
+  const [pastData, setPastData] = React.useState<AdditionalInfo>(initState);
+  const [pause, setPause] = React.useState(false);
 
   /**
    * Get user's motion permission and check pedometer is available.
@@ -85,11 +87,14 @@ export default function StepFun(): JSX.Element {
    * It starts the step counter.
    */
   const startStepCounter = () => {
+    console.log('pastData =>> ', pastData);
     startStepCounterUpdate(new Date(), data => {
       setSensorType(data.counterType as SensorName);
       console.log(data);
       const parsedData = parseStepData(data);
-      setStepCount(parsedData.steps);
+      parsedData.steps += pastData?.steps ? pastData?.steps : 0;
+      parsedData.calories = (parsedData.steps * 0.045).toFixed(3).toString() + 'kCal';
+      parsedData.distance = (parsedData.steps * 0.762).toFixed(3).toString() + 'm';
       setAdditionalInfo({
         ...parsedData,
       });
@@ -104,7 +109,7 @@ export default function StepFun(): JSX.Element {
    * This function is used to stop the step counter.
    */
   const stopStepCounter = () => {
-    setAdditionalInfo(initState);
+    // setAdditionalInfo(initState);
     stopStepCounterUpdate();
     console.log('additionalInfo =>> ', additionalInfo);
     setLoaded(false);
@@ -147,54 +152,50 @@ export default function StepFun(): JSX.Element {
    * function that stops the step counter.
    */
   React.useEffect(() => {
-    console.debug(`🚀 stepCounter ${supported ? '' : 'not'} supported`);
-    console.debug(`🚀 user ${granted ? 'granted' : 'denied'} stepCounter`);
-    if (supported && granted && webE) {
+    // console.debug(`🚀 stepCounter ${supported ? '' : 'not'} supported`);
+    // console.debug(`🚀 user ${granted ? 'granted' : 'denied'} stepCounter`);
+    if (supported && granted) {
       startStepCounter();
     } else {
       stopStepCounter();
     }
-  }, [granted, supported, webE]);
+  }, [granted, supported]);
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ImageBackground
-          source={{ uri: 'https://image.utoimage.com/preview/cp860522/2018/10/201810018116_500.jpg' }}
-          // source={{
-          //   uri: 'https://media.istockphoto.com/id/1133405969/ko/%EC%82%AC%EC%A7%84/%EB%B8%94%EB%9E%99-%EB%A7%A4%ED%8A%B8-%EB%B0%B0%EA%B2%BD.jpg?s=612x612&w=0&k=20&c=E8vn42avxoOtqiChGNAhRkSEieXNnmDbWONUTd7KgVU=',
-          // }}
-          style={styles.backgroundImage}>
-          <View style={styles.container}>
-            <View style={styles.indicator}>
-              <CircularProgress
-                value={stepCount}
-                maxValue={10000}
-                valueSuffix="steps"
-                progressValueFontSize={42}
-                radius={165}
-                activeStrokeColor="white"
-                inActiveStrokeColor="white"
-                inActiveStrokeOpacity={0.2}
-                inActiveStrokeWidth={40}
-                subtitle={additionalInfo.calories === '0 kCal' ? '' : additionalInfo.calories}
-                activeStrokeWidth={40}
-                title="   "
-                titleColor="#000080"
-                titleFontSize={30}
-                titleStyle={{ fontWeight: 'bold' }}
-              />
-            </View>
-          </View>
-        </ImageBackground>
-      </SafeAreaView>
-      <Button
-        title="걷기 종료"
-        onPress={() => {
-          stopStepCounter();
-          navigation.navigate('WebView', { params: additionalInfo });
-        }}
-      />
+      <View style={styles.container}>
+        <Text>걸음수 : {additionalInfo.steps === undefined ? '0 steps' : additionalInfo.steps + ' steps'} </Text>
+        <Text>걸은 거리 : {additionalInfo.distance === '0 m' ? '' : additionalInfo.distance}</Text>
+        <Text>소모된 칼로리 : {additionalInfo.calories === '0 kCal' ? '' : additionalInfo.calories}</Text>
+      </View>
+      <View style={styles.button}>
+        <Button
+          title="걷기 종료"
+          onPress={() => {
+            stopStepCounter();
+            setPastData(initState);
+            navigation.navigate('WebView', { params: additionalInfo });
+          }}
+        />
+        {pause ? (
+          <Button
+            title="다시 걷기"
+            onPress={() => {
+              setPause(false);
+              startStepCounter();
+            }}
+          />
+        ) : (
+          <Button
+            title="걷기 일시정지"
+            onPress={() => {
+              setPause(true);
+              stopStepCounter();
+              setPastData(additionalInfo);
+            }}
+          />
+        )}
+      </View>
     </>
   );
 }
@@ -222,5 +223,9 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     justifyContent: 'center',
+  },
+  button: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
 });
