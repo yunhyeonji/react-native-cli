@@ -4,6 +4,8 @@ import { View, StyleSheet, Button, Text } from 'react-native';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from './screens/RootStack';
 import { check } from 'react-native-permissions';
+import { Alert } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 import StepFun from './stepFun';
 
 type WebViewScreenRouteProp = RouteProp<RootStackParamList, 'WebView'>;
@@ -21,6 +23,14 @@ const MyWebView: React.FC = () => {
     // 웹뷰로 메시지 전송
     webViewRef.current?.postMessage(message);
   };
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      console.log(remoteMessage);
+    });
+
+    return unsubscribe;
+  }, []);
   useEffect(() => {
     if (params) {
       sendMessageToWeb('걸음수' + JSON.stringify(params));
@@ -45,9 +55,9 @@ const MyWebView: React.FC = () => {
     <>
       <View style={styles.container}>
         <Button title="메시지 전송" onPress={() => sendMessageToWeb('네이티브')} />
-        {/* <WebView source={{ uri: 'http://reactwebapp.dothome.co.kr/webapp/' }} onMessage={onWebviewMessage} /> */}
+        <WebView source={{ uri: 'http://reactwebapp.dothome.co.kr/webapp/' }} onMessage={onWebviewMessage} />
         {/* <WebView ref={webViewRef} source={{ uri: 'http://172.20.14.69:3000/webapp/' }} onMessage={onWebviewMessage} /> */}
-        <WebView ref={webViewRef} source={{ uri: 'http://172.20.14.69:9900' }} onMessage={onWebviewMessage} />
+        {/* <WebView ref={webViewRef} source={{ uri: 'http://172.20.14.69:9900' }} onMessage={onWebviewMessage} /> */}
       </View>
       <View style={styles.result}>
         {check ? (
