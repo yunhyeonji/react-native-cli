@@ -1,4 +1,4 @@
-package com.walking_tracker;
+package com.smartcity_citizen_mobile;
 
 import android.app.Application;
 

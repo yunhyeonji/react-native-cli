@@ -24,14 +24,6 @@ const MyWebView: React.FC = () => {
     webViewRef.current?.postMessage(message);
   };
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      console.log(remoteMessage);
-    });
-
-    return unsubscribe;
-  }, []);
-  useEffect(() => {
     if (params) {
       sendMessageToWeb('걸음수' + JSON.stringify(params));
       setCheck(false);

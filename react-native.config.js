@@ -8,7 +8,7 @@ module.exports = {
     android: {
       sourceDir: './android',
       appName: 'app',
-      packageName: 'com.walking_tracker',
+      packageName: 'com.smartcity_citizen_mobile',
     },
   },
 };

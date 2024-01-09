@@ -1,4 +1,4 @@
-package com.walking_tracker;
+package com.smartcity_citizen_mobile;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -15,7 +15,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "walking_tracker";
+    return "smartcity_citizen_mobile";
   }
 
   /**
