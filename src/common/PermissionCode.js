@@ -1,0 +1,12 @@
+import { PERMISSIONS } from 'react-native-permissions';
+/**
+ * 요청 권한 리스트
+ */
+export const permissionsType = [
+  /* 위치 권한 */
+  PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+  PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+  PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION,
+  /* 앱푸시 권한 */
+  PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+];
